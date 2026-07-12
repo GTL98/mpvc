@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mpvc"
+version = "0.0.1"
+authors = [
+  { name="Mundo Python", email="mundopython98@gmail.com" },
+]
+description = "Módulo para detecção de mão, rosto e malha facial usando MediaPipe e OpenCV"
+readme = "README.md"
+requires-python = ">=3.9, <=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "opencv-python",
+    "mediapipe==0.10.21",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mpvc*"]
