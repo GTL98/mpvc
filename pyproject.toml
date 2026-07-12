@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpvc"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Mundo Python", email="mundopython98@gmail.com" },
 ]
@@ -20,6 +20,10 @@ dependencies = [
     "opencv-python",
     "mediapipe==0.10.21",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/GTL98/mpvc"
+"Bug Tracker" = "https://github.com/GTL98/mpvc/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
