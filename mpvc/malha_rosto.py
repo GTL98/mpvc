@@ -10,8 +10,8 @@ class DetectorMalhaRosto:
             modo: bool = False,
             max_rosto: int = 2,
             refinar_pontos: bool = False,
-            deteccao_confianca: float = 0.5,
-            rastreio_confianca: float = 0.5,
+            deteccao_confianca: float|int = 0.5,
+            rastreio_confianca: float|int = 0.5,
             cor_pontos: Tuple = (255, 255, 255),
             cor_conexoes: Tuple = (0, 255, 0)
     ):

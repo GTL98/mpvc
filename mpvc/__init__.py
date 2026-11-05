@@ -13,5 +13,5 @@ __all__ = [
     'DetectorMalhaRosto'
 ]
 
-__version__ = '0.0.2'
+__version__ = '0.1.0'
 __author__ = 'Mundo Python'

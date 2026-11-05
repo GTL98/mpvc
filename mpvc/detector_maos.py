@@ -12,8 +12,8 @@ class DetectorMaos:
             self,
             modo: bool = False,
             max_maos: int = 2,
-            deteccao_confianca: float = 0.5,
-            rastreio_confianca: float = 0.5,
+            deteccao_confianca: float|int = 0.5,
+            rastreio_confianca: float|int = 0.5,
             cor_pontos: Tuple[int, int, int] = (0, 0, 255),
             cor_conexoes: Tuple[int, int, int] = (255, 255, 255),
     ):
@@ -141,7 +141,7 @@ class DetectorMaos:
 
         return lista_pontos
 
-    def encontrar_distancia(
+    def encontrar_distancia_pontos(
             self,
             ponto_1: int,
             ponto_2: int,
@@ -153,7 +153,7 @@ class DetectorMaos:
             cor_ponto: Tuple[int, int, int] = (0, 255, 0),
             espessura: int = 2,
             raio: int = 7
-    ) -> Tuple[float, np.ndarray, List[int]]:
+    ) -> Tuple[float|int, np.ndarray, List[int]]:
         """
         Função responsável por calcular a distância entre dois pontos da mão.
         :param ponto_1: ID do primeiro ponto.
@@ -198,6 +198,64 @@ class DetectorMaos:
 
         return distancia, imagem, info_pontos
 
+    def encontar_distancia_camera(
+            self,
+            imagem: np.ndarray,
+            mao_num: int = 0,
+            largura_real: float|int = 8.5,
+            distancia_focal: float|int = 700,
+            desenho: bool = True,
+            cor_texto: Tuple[int, int, int] = (255, 0, 0),
+            posicao_texto: Tuple[int, int] = (10, 100)
+    ) -> Tuple[float|int, np.ndarray]:
+        """
+        Função responsável por estimar a distância da mão em relação à câmera em centímetros.
+        Utiliza a distância entre a base do indicador (ponto 5) e a base do mindinho (ponto 17).
+        :param imagem: Imagem capturada.
+        :param mao_num: Número da mão detectada.
+        :param largura_real: Largura aproximada da palma da mão (em cm).
+        :param distancia_focal: Distância fical da câmera.
+        :param desenho: Mostrar o valor da distância na captura.
+        :param cor_texto: Cor do texto (BGR).
+        :param posicao_texto: Posição X e Y do texto na captura.
+        :return: Uma tupla contendo a distância calculada (em cm) e a imagem.
+        """
+        # --- Distância --- #
+        distancia = 0
+        
+        # --- Verificar se alguma mão foi detectada --- #
+        if self.resultado.multi_hand_landmarks and len(self.resultado.multi_hand_landmarks) > mao_num:
+            mao_alvo = self.resultado.multi_hand_landmarks[mao_num]
+            altura, largura, _ = imagem.shape
+            
+            # --- Extrair as coordenadas em pixels dos pontos 5 e 17 --- #
+            x_5 = int(mao_alvo.landmark[5].x * largura)
+            y_5 = int(mao_alvo.landmark[5].y * altura)
+            
+            x_17 = int(mao_alvo.landmark[17].x * largura)
+            y_17 = int(mao_alvo.landmark[17].y * altura)
+            
+            # --- Calcular a largura da mão em pixels --- #
+            largura_pixels = math.hypot(x_17 - x_5, y_17 - y_5)
+
+            # --- Calcular a distância da câmera utilizando semelhança de triângulos --- #
+            if largura_pixels > 0:
+                distancia = (largura_real * distancia_focal) / largura_pixels
+
+            # --- Colocar o texto na captura --- #
+            if desenho:
+                cv2.putText(
+                    imagem,
+                    f'Distancia camera: {int(distancia)} cm',
+                    posicao_texto,
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    cor_texto,
+                    2
+                )
+
+        return distancia, imagem
+
 
 def main():
     # --- Capturar o vídeo pela webcam --- #
@@ -222,7 +280,11 @@ def main():
 
         # --- Distância entre os pontos --- #
         if len(lista_pontos) != 0 and len(lista_pontos[0]) > 0:
-            distancia, imagem, info = detector.encontrar_distancia(4, 8, imagem, desenho_ponto=False)
+            distancia, imagem, info = detector.encontrar_distancia_pontos(
+                4,
+                8, imagem,
+                desenho_ponto=False
+            )
             cv2.putText(
                 imagem,
                 f'Dist: {int(distancia)}',
@@ -232,6 +294,13 @@ def main():
                 (255, 255, 0),
                 2
             )
+
+        # --- Distância da mão até a câmera --- #
+        distancia_camera, imagem = detector.encontar_distancia_camera(
+            imagem,
+            largura_real=6.5,
+            distancia_focal=617.6
+        )
 
         # --- Mostrar a imagem de captura --- #
         cv2.imshow('Captura', imagem)

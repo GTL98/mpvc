@@ -6,7 +6,7 @@ from typing import List, Tuple
 
 class DetectorRosto:
     """Classe responsável por detectar rostos."""
-    def __init__(self, deteccao_confianca: float = 0.5):
+    def __init__(self, deteccao_confianca: float|int = 0.5):
         """
         Função responsável por iniciar a classe.
         :param deteccao_confianca: Percentual da taxa de detecção do rosto. Se for menor que este limite,
