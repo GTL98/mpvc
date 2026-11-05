@@ -198,7 +198,7 @@ class DetectorMaos:
 
         return distancia, imagem, info_pontos
 
-    def encontar_distancia_camera(
+    def encontrar_distancia_camera(
             self,
             imagem: np.ndarray,
             mao_num: int = 0,
@@ -296,7 +296,7 @@ def main():
             )
 
         # --- Distância da mão até a câmera --- #
-        distancia_camera, imagem = detector.encontar_distancia_camera(
+        distancia_camera, imagem = detector.encontrar_distancia_camera(
             imagem,
             largura_real=6.5,
             distancia_focal=617.6
