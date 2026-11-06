@@ -280,7 +280,15 @@ class DetectorMaos:
             mao_lado = self.resultado.multi_handedness[mao_num].classification[0].label
 
             # --- Polegar --- #
+            # --- Mão direita física: o polegar aponta para a esquerda da tela (X menor) --- #
             if mao_lado == 'Left':
+                if mao_alvo.landmark[id_pontas[0]].x < mao_alvo.landmark[id_pontas[0] - 1].x:
+                    dedos.append(1)
+                else:
+                    dedos.append(0)
+            
+            # --- Mão esquerda física: o polegar aponta para a direita da tela (X maior) --- #
+            elif mao_lado == 'Right':
                 if mao_alvo.landmark[id_pontas[0]].x > mao_alvo.landmark[id_pontas[0] - 1].x:
                     dedos.append(1)
                 else:
