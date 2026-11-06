@@ -273,8 +273,8 @@ class DetectorMaos:
         id_pontas = [4, 8, 12, 16, 20]
 
         # --- Obter a mão detectada --- #
-        if self.resultado.multi_landmarks and len(self.resultado.multo_landmarks) > mao_num:
-            mao_alvo = self.resultado.multi_landmarks[mao_num]
+        if self.resultado.multi_hand_landmarks and len(self.resultado.multi_hand_landmarks) > mao_num:
+            mao_alvo = self.resultado.multi_hand_landmarks[mao_num]
 
             # --- Verificar se a mão é a esquerda ou direita --- #
             mao_lado = self.resultado.multi_handedness[mao_num].classification[0].label
