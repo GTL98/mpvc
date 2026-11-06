@@ -256,6 +256,45 @@ class DetectorMaos:
 
         return distancia, imagem
 
+    def dedos_levantados(
+            self,
+            mao_num: int = 0
+    ) -> List[int]:
+        """
+        Função responável por verificar quais dedos estão levantados.
+        :param mao_num: Número da mão detectada.
+        :return: Lista com 5 valores (1 = levantado, 0 = abaixado) na ordem: [polegar, indicador,
+        médio, anelar, mindinho]. Retorna uma lista vazia caso nenhuma mão seja detectada.
+        """
+        # --- Lista para armazenar os dedos --- #
+        dedos = []
+
+        # --- IDs das pontas dos dedos (em ordem) --- #
+        id_pontas = [4, 8, 12, 16, 20]
+
+        # --- Obter a mão detectada --- #
+        if self.resultado.multi_landmarks and len(self.resultado.multo_landmarks) > mao_num:
+            mao_alvo = self.resultado.multi_landmarks[mao_num]
+
+            # --- Verificar se a mão é a esquerda ou direita --- #
+            mao_lado = self.resultado.multi_handedness[mao_num].classification[0].label
+
+            # --- Polegar --- #
+            if mao_lado == 'Left':
+                if mao_alvo.landmark[id_pontas[0]].x > mao_alvo.landmark[id_pontas[0] - 1].x:
+                    dedos.append(1)
+                else:
+                    dedos.append(0)
+
+            # --- Outros 4 dedos --- #
+            for id_dedo in range(1, 5):
+                if mao_alvo.landmark[id_pontas[id_dedo]].y < mao_alvo.landmark[id_pontas[id_dedo] - 2].y:
+                    dedos.append(1)
+                else:
+                    dedos.append(0)
+
+        return dedos
+
 
 def main():
     # --- Capturar o vídeo pela webcam --- #
